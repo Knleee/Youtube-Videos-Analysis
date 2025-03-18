@@ -9,7 +9,7 @@ import csv
 
 scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 
-def main():
+def fetch_videos(query='python'):
     # Disable OAuthlib's HTTPS verification when running locally.
     # *DO NOT* leave this option enabled in production.
     clients_secret_path = '/Users/lukasvm/UTK /Spring 25/DATA 304/Final Project/secrets/client_secret.json'
@@ -28,7 +28,6 @@ def main():
 
 
     # Search Youtube videos and get video_ids
-    query = 'python'
     search_request = youtube.search().list(
         part="snippet",
         maxResults=10,
@@ -67,7 +66,7 @@ def json_csv(json_response):
     data = json_response
 
     # Define CSV file name
-    csv_filename = "../data/youtube_videos.csv"
+    csv_filename = "../data/videos/youtube_videos.csv"
 
     # Extract relevant data
     items = json_response.get("items", [])
