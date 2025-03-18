@@ -3,14 +3,12 @@ import os
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
-
-import json
 import csv
 
 scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 
-def fetch_videos(query='python'):
-    # Disable OAuthlib's HTTPS verification when running locally.
+def youtube_API_setup():
+# Disable OAuthlib's HTTPS verification when running locally.
     # *DO NOT* leave this option enabled in production.
     clients_secret_path = '/Users/lukasvm/UTK /Spring 25/DATA 304/Final Project/secrets/client_secret.json'
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
@@ -25,48 +23,15 @@ def fetch_videos(query='python'):
     credentials = flow.run_local_server(port=8080)
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, credentials=credentials)
-
-
-    # Search Youtube videos and get video_ids
-    search_request = youtube.search().list(
-        part="snippet",
-        maxResults=10,
-        q=query
-    )
-    search_response = search_request.execute()
-
-        # 1. Get videos_ids from search_response
-    ids =[]
-    for item in search_response.get("items", []):
-        if item["id"].get("videoId", "N/A"):
-            ids.append(item["id"].get("videoId", "N/A"))
     
-        # 2. Make Request to get videos snippet & stats
-    video_request = youtube.videos().list(
-        part="statistics,snippet",
-        id=','.join(ids)
-    )
-    videos_response = video_request.execute()
+    return youtube
 
-    # Save results
-    if videos_response:
-        # Write response to JSON file
-        with open("../data/response.json", "w", encoding="utf-8") as json_file:
-            json.dump(videos_response, json_file, indent=4)  # Pretty-print with indentation
-
-        print("JSON response saved to response.json")
-
-        # Write JSON to CSV
-        json_csv(videos_response)
-    else:
-        print(f"Error: nodata")
-
-def json_csv(json_response):
+def json_csv(json_response, file_path = '../../data/videos/youtube_videos.csv'):
     # Load JSON data
     data = json_response
 
     # Define CSV file name
-    csv_filename = "../data/videos/youtube_videos.csv"
+    csv_filename = file_path
 
     # Extract relevant data
     items = json_response.get("items", [])
@@ -114,5 +79,41 @@ def json_csv(json_response):
 
     print(f"CSV file '{csv_filename}' has been created successfully!")
 
-if __name__ == "__main__":
-    main()
+def fetch_videos(query='python', limit=10, save_path='{query}'):
+    CSV_FILE_PATH = save_path.format(query=query)
+
+    # Set up youtube API connection and authentication
+    youtube =youtube_API_setup()
+
+    # Search Youtube videos with query
+    search_request = youtube.search().list(
+        part="snippet",
+        maxResults=limit,
+        q=query
+    )
+    search_response = search_request.execute()
+
+    # Get videos_ids from search_response
+    ids =[]
+    for item in search_response.get("items", []):
+        if item["id"].get("videoId", "N/A"):
+            ids.append(item["id"].get("videoId", "N/A"))
+    
+    # Make Request to get videos snippet & stats
+    video_request = youtube.videos().list(
+        part="statistics,snippet",
+        id=','.join(ids)
+    )
+    videos_response = video_request.execute()
+
+    # Save results
+    if videos_response:
+        # Write JSON to CSV
+        json_csv(videos_response, file_path=CSV_FILE_PATH)
+    else:
+        print(f"Error: nodata")
+
+    return ids
+
+if __name__ == '__main__':
+    fetch_videos(query='prank')

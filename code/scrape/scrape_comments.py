@@ -193,8 +193,8 @@ def get_video_comments(url='', video_id = 'JOksXpBtOUc', file_path='{video_id}.c
 1. Dump comments to a csv  from a single video
 
 """
-youtube_URL = 'https://www.youtube.com/watch?v=JOksXpBtOUc'
-get_video_comments(youtube_URL, file_path=FILE_PATH)
+# youtube_URL = 'https://www.youtube.com/watch?v=JOksXpBtOUc'
+# get_video_comments(youtube_URL, file_path=FILE_PATH)
 
 """
 2. Dump comments to a csv by parsing links from a csv with video links
