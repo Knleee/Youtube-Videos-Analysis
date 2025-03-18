@@ -1,0 +1,8 @@
+beautifulsoup4==4.13.3
+google_api_python_client==2.164.0
+google_auth_oauthlib==1.2.1
+lxml==5.3.1
+numpy==2.2.4
+pandas==2.2.3
+Requests==2.32.3
+scrapetube==2.5.1
