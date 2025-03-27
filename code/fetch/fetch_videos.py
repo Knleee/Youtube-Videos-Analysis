@@ -40,7 +40,9 @@ def json_csv(json_response, file_path = '../../data/videos/youtube_videos.csv'):
     for item in items:
         snippet = item['snippet']
         statistics = item['statistics']
-        
+        contentDetails = item['contentDetails']
+        topicDetails = item.get('topicDetails')
+        print(contentDetails, topicDetails)
         extracted_data.append({
             'video_id': item['id'],
             'published_at': snippet['publishedAt'],
@@ -53,7 +55,9 @@ def json_csv(json_response, file_path = '../../data/videos/youtube_videos.csv'):
             'view_count': statistics['viewCount'],
             'like_count': statistics['likeCount'],
             'favorite_count': statistics['favoriteCount'],
-            'comment_count': statistics['commentCount']
+            'comment_count': statistics['commentCount'],
+            'duration': contentDetails['duration'],
+            'topic': ','.join(topicDetails.get('topicCategories',[]))
         })
 
     # Write data to CSV
@@ -70,7 +74,9 @@ def json_csv(json_response, file_path = '../../data/videos/youtube_videos.csv'):
             'view_count',
             'like_count',
             'favorite_count',
-            'comment_count'
+            'comment_count',
+            'duration',
+            'topic'
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -101,11 +107,10 @@ def fetch_videos(query='python', limit=10, save_path='{query}'):
     
     # Make Request to get videos snippet & stats
     video_request = youtube.videos().list(
-        part="statistics,snippet",
+        part="statistics,snippet,contentDetails,topicDetails",
         id=','.join(ids)
     )
     videos_response = video_request.execute()
-
     # Save results
     if videos_response:
         # Write JSON to CSV
