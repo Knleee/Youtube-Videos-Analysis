@@ -1,0 +1,1 @@
+- get 'duration' and 'topicCategory' from ContentDetails and topicDetails
