@@ -3,7 +3,9 @@ import os
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
+
 import csv
+import time
 
 scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 
@@ -42,7 +44,6 @@ def json_csv(json_response, file_path = '../../data/videos/youtube_videos.csv'):
         statistics = item['statistics']
         contentDetails = item['contentDetails']
         topicDetails = item.get('topicDetails')
-        print(contentDetails, topicDetails)
         extracted_data.append({
             'video_id': item['id'],
             'published_at': snippet['publishedAt'],
@@ -53,7 +54,7 @@ def json_csv(json_response, file_path = '../../data/videos/youtube_videos.csv'):
             'tags': ', '.join(snippet.get('tags',[])),
             'category_id': snippet['categoryId'],
             'view_count': statistics['viewCount'],
-            'like_count': statistics['likeCount'],
+            'like_count': statistics.get('likeCount'),
             'favorite_count': statistics['favoriteCount'],
             'comment_count': statistics['commentCount'],
             'duration': contentDetails['duration'],
@@ -81,6 +82,7 @@ def json_csv(json_response, file_path = '../../data/videos/youtube_videos.csv'):
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()  # Write column headers
+        time.sleep(2)
         writer.writerows(extracted_data)  # Write data rows
 
     print(f"CSV file '{csv_filename}' has been created successfully!")

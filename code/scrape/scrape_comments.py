@@ -173,8 +173,6 @@ def get_video_comments(url='', video_id = 'JOksXpBtOUc', file_path='{video_id}.c
                 break
         # add videoId column
         df_comment['videoId'] = video_id
-        print("DataFrame Shape: ", df_comment.shape, "\nComment DataFrame: ", df_comment)
-
         if not os.path.isfile(file_name):
             df_comment.to_csv(file_name, encoding='utf-8', index=False)
         else:  # else it exists so append without writing the header
